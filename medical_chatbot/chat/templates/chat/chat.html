@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Chatbot - Chat</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        #chat { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
+        input { width: 80%; }
+    </style>
+</head>
+<body>
+    <nav>
+        {% if user.is_authenticated %}
+        Logged in as {{ user.username }} |
+        <a href="{% url 'profile' %}">Profile</a> |  <!-- Add URL for profile -->
+        <a href="{% url 'settings' %}">Settings</a> |  <!-- Add URL for settings -->
+        <a href="{% url 'upload_patient_document' %}">Upload</a> |
+        <a href="{% url 'logout' %}">Logout</a>
+        {% endif %}
+    </nav>
+    
+    <h1>Medical AI Assistant - Chat</h1>
+    <div id="chat"></div>
+    
+    <!-- Single form -->
+    <form id="chat-form" method="POST">
+        {% csrf_token %}
+        <input type="text" id="question" name="question" placeholder="Ask a medical question..." required>
+        <button type="submit">Send</button>
+        <button type="button" id="upload-btn">Upload File</button>  <!-- Fixed button type -->
+    </form>
+
+    <script>
+        // Get CSRF token from cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        document.getElementById('chat-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const question = document.getElementById('question').value;
+
+            fetch('/chat/', {  // Update to point to /chat/ URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: new URLSearchParams({ question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const chat = document.getElementById('chat');
+                chat.innerHTML += `<p><strong>You:</strong> ${question}</p>`;
+                chat.innerHTML += `<p><strong>AI:</strong> ${data.response || data.error}</p>`;
+                document.getElementById('question').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const chat = document.getElementById('chat');
+                chat.innerHTML += `<p><strong>Error:</strong> Something went wrong.</p>`;
+            });
+        });
+
+        // Optional: Add upload functionality (placeholder)
+        document.getElementById('upload-btn').addEventListener('click', function() {
+            alert('Upload feature coming soon!');  // Replace with actual logic
+        });
+    </script>
+</body>
+</html>

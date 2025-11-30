@@ -1,0 +1,4 @@
+Django==4.2
+# OpenAI
+openai==2.8.1
+python-dotenv==1.0.0

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Chatbot</title>
+    <style> body { font-family: Arial; margin: 20px; } </style>
+</head>
+<body>
+    <h1>Welcome to Medical AI Assistant</h1>
+    <p>Please <a href="{% url 'login' %}">log in</a> to access the chat.</p>
+    {% if not user.is_authenticated %}
+    <p>New user? <a href="{% url 'register' %}">Register here</a>.</p>
+    {% endif %}
+</body>
+</html>
