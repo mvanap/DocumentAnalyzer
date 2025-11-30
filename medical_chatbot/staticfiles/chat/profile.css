@@ -1,0 +1,33 @@
+.profile-card {
+    max-width: 400px;
+    margin: 30px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.profile-card h2 {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.profile-card p {
+    font-size: 1em;
+    margin: 10px 0;
+}
+
+.profile-card .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+.profile-card .btn:hover {
+    background-color: #0056b3;
+}

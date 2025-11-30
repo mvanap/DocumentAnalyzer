@@ -24,22 +24,24 @@ def index_view(request):
 def register(request):
     """
     Register a new user using Django's built-in UserCreationForm.
-    On sucess, auto-login the user and redirect to LOGIN_REDIRECT_URL.
+    On success, auto-login the user and redirect to LOGIN_REDIRECT_URL.
     """
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         
         if form.is_valid():
-            user= form.save()
+            user = form.save()
             login(request, user)
-            return redirect('chat')
-        
+            return redirect('chat')  # redirect after successful registration
         else:
             messages.error(request, "Please fix the errors below.")
-            
+            # ✅ Render the form again with errors
+            return render(request, 'chat/register.html', {'form': form})
+    
     else:
         form = UserCreationForm()
-        return render(request, 'chat/register.html', {'form':form})
+        return render(request, 'chat/register.html', {'form': form})
+
     
 def logout_view(request):
     """
@@ -47,7 +49,10 @@ def logout_view(request):
     """
     logout(request)
     messages.info(request, "Logged Out. ")
-    return redirect('index')
+    return redirect('login')
+
+def settings_view(request):
+    return render(request, 'chat/settings.html')
 
 @login_required
 

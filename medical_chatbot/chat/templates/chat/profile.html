@@ -1,8 +1,14 @@
-{% extends 'chats/index.html' %}
-{% block title%}Profile{% endblock %}
+{% load static %}
+
+{% extends 'chat/index.html' %}
+
+{% block title %}Profile{% endblock %}
+
 {% block content %}
-<h2> Profile</h2>
-<p>Username: {{ user.username }}</p>
-<p>Email: {{ user.email }}</p>
-<p><a href='{% url 'upload_patient_document' %}'>Upload files</a></p>
-{%endblock%}
+<div class="auth-form profile-card">
+    <h2>Profile</h2>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><a class="btn" href="{% url 'upload_patient_document' %}">Upload Files</a></p>
+</div>
+{% endblock %}

@@ -1,37 +1,33 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Medical Chatbot - Chat</title>
-    <style>
-        body { font-family: Arial; margin: 20px; }
-        #chat { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
-        input { width: 80%; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'chat/chat.css' %}">
 </head>
 <body>
     <nav>
         {% if user.is_authenticated %}
-        Logged in as {{ user.username }} |
-        <a href="{% url 'profile' %}">Profile</a> |  <!-- Add URL for profile -->
-        <a href="{% url 'settings' %}">Settings</a> |  <!-- Add URL for settings -->
+        <span>Logged in as {{ user.username }}</span> |
+        <a href="{% url 'profile' %}">Profile</a> |
+        <a href="{% url 'settings' %}">Settings</a> |
         <a href="{% url 'upload_patient_document' %}">Upload</a> |
         <a href="{% url 'logout' %}">Logout</a>
         {% endif %}
     </nav>
-    
-    <h1>Medical AI Assistant - Chat</h1>
-    <div id="chat"></div>
-    
-    <!-- Single form -->
-    <form id="chat-form" method="POST">
-        {% csrf_token %}
-        <input type="text" id="question" name="question" placeholder="Ask a medical question..." required>
-        <button type="submit">Send</button>
-        <button type="button" id="upload-btn">Upload File</button>  <!-- Fixed button type -->
-    </form>
+
+    <div class="chat-container">
+        <h1>Medical AI Assistant</h1>
+        <div id="chat" class="chat-box"></div>
+
+        <form id="chat-form" class="chat-form" method="POST">
+            {% csrf_token %}
+            <input type="text" id="question" name="question" placeholder="Ask a medical question..." required autocomplete="off">
+            <button type="submit">Send</button>
+        </form>
+    </div>
 
     <script>
-        // Get CSRF token from cookie
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -46,13 +42,27 @@
             }
             return cookieValue;
         }
+
         const csrftoken = getCookie('csrftoken');
+
+        const chatBox = document.getElementById('chat');
+
+        function addMessage(sender, message) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', sender);
+            msgDiv.innerHTML = `<span>${message}</span>`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
         document.getElementById('chat-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const question = document.getElementById('question').value;
+            if (!question) return;
 
-            fetch('/chat/', {  // Update to point to /chat/ URL
+            addMessage('user', question);
+
+            fetch('/chat/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -62,21 +72,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                const chat = document.getElementById('chat');
-                chat.innerHTML += `<p><strong>You:</strong> ${question}</p>`;
-                chat.innerHTML += `<p><strong>AI:</strong> ${data.response || data.error}</p>`;
+                addMessage('ai', data.response || data.error);
                 document.getElementById('question').value = '';
             })
             .catch(error => {
+                addMessage('ai', 'Something went wrong.');
                 console.error('Error:', error);
-                const chat = document.getElementById('chat');
-                chat.innerHTML += `<p><strong>Error:</strong> Something went wrong.</p>`;
             });
-        });
-
-        // Optional: Add upload functionality (placeholder)
-        document.getElementById('upload-btn').addEventListener('click', function() {
-            alert('Upload feature coming soon!');  // Replace with actual logic
         });
     </script>
 </body>
