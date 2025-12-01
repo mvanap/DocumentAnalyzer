@@ -1,17 +1,140 @@
-{% load static %}
-
 {% extends 'chat/index.html' %}
+
+{% load static %}
 
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="auth-form">
-    <h2>Register</h2>
-    <form method="post" novalidate>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn">Create Account</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
-</div>
+    <style>
+        /* Style for the authentication form */
+        .auth-form {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            text-align: center; /* Center the content */
+        }
+
+        .auth-form h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        /* Style for each form field */
+        .auth-form .form-field {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            color: #34495e;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            margin-bottom: 10px; /* Space between inputs */
+        }
+
+        .auth-form input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* Password field style */
+        .auth-form input[type="password"] {
+            -webkit-text-security: disc; /* Hide text for password */
+        }
+
+        /* Password confirmation field style */
+        .auth-form input[name="password2"] {
+            -webkit-text-security: disc; /* Hide text for confirmation password */
+        }
+
+        /* Change the font for numbers in password input */
+        .auth-form input[type="password"]::-webkit-outer-spin-button,
+        .auth-form input[type="password"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 8px 0;
+            background-color: #3498db;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px; /* Add some margin to space it out from the fields */
+        }
+
+        .auth-form button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Link to login at the bottom */
+        .auth-form p {
+            font-size: 1rem;
+            color: #34495e;
+            margin-top: 15px;
+        }
+
+        .auth-form p a {
+            color: #3498db;
+        }
+
+        .auth-form p a:hover {
+            text-decoration: underline;
+        }
+
+        /* Optional: Add some padding to the body to ensure the form is not right at the top of the page */
+        body {
+            padding: 20px;
+        }
+
+    </style>
+
+    <div class="auth-form">
+        <h2>Register</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <!-- Username Field -->
+            <div class="form-field">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-field">
+                <label for="id_password">Password</label>
+                {{ form.password1 }}
+            </div>
+
+            <!-- Password Confirmation Field -->
+            <div class="form-field">
+                <label for="id_password2">Confirm Password</label>
+                {{ form.password2 }}
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
 {% endblock %}

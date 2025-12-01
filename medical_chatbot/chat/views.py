@@ -11,6 +11,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.urls import reverse
+import os
+from django.conf import settings
     
 # Root URL (/) - Landing page with login prompt
 def index_view(request):
@@ -63,50 +65,50 @@ def profile(request):
     return render(request, 'chat/profile.html')
 
 
-@login_required  # Add this if uploads should require login
-def upload_patient_document(request):
-    if request.method == 'POST':
-        form = PatientDocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            doc = form.save(commit=False)
-            uploaded_file = request.FILES['document']
-            doc.file_name = uploaded_file.name
-            doc.content_type = uploaded_file.content_type
-            doc.size = uploaded_file.size
-            doc.uploaded_by = request.user
-            doc.save()
-            messages.success(request, "File uploaded successfully.")
-            return redirect('patient_files', patient_id=doc.patient_id)
-        # No else here - fall through to render
-    else:
-        form = PatientDocumentForm()  # For GET requests
-    return render(request, 'chat/upload.html', {'form': form})
-        
-@login_required  # Add if needed
-def list_patient_files(request, patient_id):
-    qs = PatientDocument.objects.filter(patient_id=patient_id).order_by("-uploaded_at")
-    if not request.user.is_staff:
-        qs = qs.filter(uploaded_by=request.user)  # Non-staff only see their uploads
-    return render(request, 'chat/upload.html', {
-        'object_list': qs,
-        'form': PatientDocumentForm(initial={'patient_id': patient_id})  # Fixed key
-    })
-
 @login_required
 def chat_view(request):
     if request.method == 'POST':
+
+        # 1️⃣ Get text question
         user_question = request.POST.get('question', '').strip()
+
+        # 2️⃣ Check if file was uploaded
+        uploaded_file = request.FILES.get('file')
+
+        if uploaded_file:
+            print("File received:", uploaded_file.name)
+            print("Size:", uploaded_file.size)
+            print("Content type:", uploaded_file.content_type)
+
+            # Use absolute path based on MEDIA_ROOT
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
+            os.makedirs(upload_dir, exist_ok=True)  # ensure folder exists
+
+            save_path = os.path.join(upload_dir, uploaded_file.name)
+            with open(save_path, "wb+") as dest:
+                for chunk in uploaded_file.chunks():
+                    dest.write(chunk)
+
+            print("Saved file to:", save_path)
+
+            return JsonResponse({
+                'response': f"File '{uploaded_file.name}' uploaded successfully."
+            })
+
+        # 3️⃣ Handle normal text question
         if user_question:
             try:
-                # Call your existing Ask_AI function
                 answer = Ask_AI(user_question, conversation_history)
-                # Save to DB (optional)
                 ChatMessage.objects.create(user_input=user_question, ai_response=answer)
                 return JsonResponse({'response': answer})
             except Exception as e:
                 return JsonResponse({'error': str(e)}, status=500)
+
         return JsonResponse({'error': 'Empty question'}, status=400)
+
     return render(request, 'chat/chat.html')
+
+
 
 @login_required
 def get_response(request):

@@ -3,40 +3,89 @@
 <html>
 <head>
     <title>Medical Chatbot - Chat</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'chat/chat.css' %}">
+    <link rel="stylesheet" href="{% static 'chat/chat.css' %}">
 </head>
 <body>
-    <nav>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="health-icon">🏥 HealthBuddy</div>
+
         {% if user.is_authenticated %}
-        <span>Logged in as {{ user.username }}</span> |
-        <a href="{% url 'profile' %}">Profile</a> |
-        <a href="{% url 'settings' %}">Settings</a> |
-        <a href="{% url 'upload_patient_document' %}">Upload</a> |
-        <a href="{% url 'logout' %}">Logout</a>
+        <div class="user-icon" id="userMenuBtn">
+            {{ user.username|first|upper }}
+        </div>
         {% endif %}
-    </nav>
+    </div>
 
-    <div class="chat-container">
-        <h1>Medical AI Assistant</h1>
-        <div id="chat" class="chat-box"></div>
+    <!-- PROFILE MENU DROPDOWN -->
+    <div class="profile-menu" id="profileMenu">
+        <a href="{% url 'profile' %}">Profile Details</a>
+        <a href="{% url 'settings' %}">Settings</a>
+        <a href="#">Chat Theme</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
 
-        <form id="chat-form" class="chat-form" method="POST">
-            {% csrf_token %}
-            <input type="text" id="question" name="question" placeholder="Ask a medical question..." required autocomplete="off">
-            <button type="submit">Send</button>
-        </form>
+    <!-- CHAT SECTION -->
+    <div class="chat-wrapper">
+
+        <!-- LEFT: CHAT HISTORY (hidden by default) -->
+        <div class="chat-history hidden" id="chatHistory">
+            <h2>Chat History</h2>
+            <div class="history-list">
+                <div class="history-item">Conversation 1</div>
+                <div class="history-item">Conversation 2</div>
+                <div class="history-item">Conversation 3</div>
+            </div>
+        </div>
+
+        <!-- RIGHT: MAIN CHAT -->
+        <div class="chat-main" id="chatMain">
+            <h1>Medical AI Assistant</h1>
+
+            <div id="chat" class="chat-box"></div>
+
+            <form id="chat-form" class="chat-form" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Upload Button -->
+                <label for="fileUpload" class="upload-btn">📎</label>
+                <input type="file" id="fileUpload" name="file" hidden>
+
+                <input type="text" id="question" name="question" placeholder="Ask a medical question..." required autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+
     </div>
 
     <script>
+        /* Toggle Profile Menu */
+        const userMenuBtn = document.getElementById("userMenuBtn");
+        const profileMenu = document.getElementById("profileMenu");
+
+        if (userMenuBtn) {
+            userMenuBtn.addEventListener("click", () => {
+                profileMenu.style.display =
+                    profileMenu.style.display === "block" ? "none" : "block";
+            });
+        }
+
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".user-icon") && !e.target.closest(".profile-menu")) {
+                profileMenu.style.display = "none";
+            }
+        });
+
+        /* Chat Functionality */
         function getCookie(name) {
             let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
+            if (document.cookie !== '') {
                 const cookies = document.cookie.split(';');
-                for (let cookie of cookies) {
-                    cookie = cookie.trim();
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+                for (let c of cookies) {
+                    c = c.trim();
+                    if (c.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(c.substring(name.length + 1));
                     }
                 }
             }
@@ -44,7 +93,6 @@
         }
 
         const csrftoken = getCookie('csrftoken');
-
         const chatBox = document.getElementById('chat');
 
         function addMessage(sender, message) {
@@ -55,31 +103,65 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.classList.add('message', 'ai', 'typing');
+            typingDiv.innerHTML = `<span>...</span>`;
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return typingDiv;
+        }
+
         document.getElementById('chat-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const question = document.getElementById('question').value;
-            if (!question) return;
+            const questionInput = document.getElementById('question');
+            const question = questionInput.value;
+            if (!question && document.getElementById("fileUpload").files.length === 0)
+                return;
 
-            addMessage('user', question);
+            // Clear input immediately
+            questionInput.value = '';
+
+            // Show the user's message in chat
+            addMessage('user', question || "📎 File uploaded");
+
+            // Show typing indicator for AI response
+            const typingIndicator = showTypingIndicator();
+
+            const formData = new FormData();
+            formData.append("question", question);
+
+            const fileInput = document.getElementById("fileUpload");
+            if (fileInput.files.length > 0) {
+                formData.append("file", fileInput.files[0]);
+            }
 
             fetch('/chat/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrftoken
+                    "X-CSRFToken": csrftoken
                 },
-                body: new URLSearchParams({ question })
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
+                // Remove the typing indicator
+                typingIndicator.remove();
+
+                // Display AI response
                 addMessage('ai', data.response || data.error);
-                document.getElementById('question').value = '';
+
+                // Clear file input
+                fileInput.value = "";
             })
-            .catch(error => {
+            .catch(err => {
+                // Remove the typing indicator in case of error
+                typingIndicator.remove();
                 addMessage('ai', 'Something went wrong.');
-                console.error('Error:', error);
             });
         });
+
     </script>
+
 </body>
 </html>

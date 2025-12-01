@@ -7,6 +7,6 @@ def patient_document_path(instance, filename):
 
 class PatientDocument(models.Model):
     patient_id = models.CharField(max_length=100, db_index=True)
-    uploaded_by=
+    uploaded_by= 
     
     

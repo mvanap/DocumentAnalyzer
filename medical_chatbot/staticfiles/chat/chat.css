@@ -1,98 +1,227 @@
+/* =========================================================
+   GENERAL STYLING
+========================================================= */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5;
     margin: 0;
-    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f9fc;
 }
 
-nav {
-    background-color: #ffffff;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
-    font-size: 14px;
-}
-
-nav a {
-    text-decoration: none;
-    color: #007bff;
-    margin: 0 5px;
-}
-
-.chat-container {
-    max-width: 700px;
-    margin: 20px auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+/* =========================================================
+   NAVBAR
+========================================================= */
+.navbar {
     display: flex;
-    flex-direction: column;
-    height: 80vh;
+    justify-content: space-between;
+    align-items: center;
+    background: #0052cc;
+    color: white;
+    padding: 12px 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.chat-container h1 {
-    text-align: center;
-    padding: 10px;
-    margin: 0;
-    border-bottom: 1px solid #ccc;
+.health-icon {
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.chat-box {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
+.user-icon {
+    width: 38px;
+    height: 38px;
+    background: white;
+    color: #0052cc;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid white;
+    transition: 0.3s;
+}
+
+.user-icon:hover {
+    background: #e6ecff;
+}
+
+/* =========================================================
+   PROFILE DROPDOWN MENU
+========================================================= */
+.profile-menu {
+    position: absolute;
+    right: 20px;
+    top: 60px;
+    width: 180px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 10px 0;
+    display: none;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.profile-menu a:hover {
+    background: #f0f4ff;
+    color: #0052cc;
+}
+
+/* =========================================================
+   CHAT LAYOUT WRAPPER (30% / 70%)
+========================================================= */
+.chat-wrapper {
+    display: flex;
+    height: calc(100vh - 70px); /* Leaves room for navbar */
+    margin-top: 20px;
+}
+
+/* =========================================================
+   LEFT PANEL: CHAT HISTORY
+========================================================= */
+/* Hide history by default */
+.chat-history.hidden {
+    display: none;
+}
+
+.chat-history h2 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.history-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background-color: #f0f0f0;
 }
 
+.history-item {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+}
+
+.history-item:hover {
+    background: #eaefff;
+}
+
+/* History toggle button */
+.history-toggle {
+    margin-left: 20px;
+    background: #e6ecff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #003f9e;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.history-toggle:hover {
+    background: #d3dcff;
+}
+
+
+/* =========================================================
+   RIGHT PANEL: MAIN CHAT
+========================================================= */
+.chat-main {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* MAIN CHAT WINDOW */
+.chat-box {
+    flex-grow: 1;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+/* CHAT MESSAGE STYLING */
 .message {
-    max-width: 70%;
-    padding: 10px 15px;
-    border-radius: 15px;
-    word-wrap: break-word;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 6px;
+    max-width: 75%;
 }
 
 .message.user {
+    background: #e6f2ff;
     align-self: flex-end;
-    background-color: #007bff;
-    color: white;
-    border-bottom-right-radius: 0;
 }
 
 .message.ai {
-    align-self: flex-start;
-    background-color: #e5e5ea;
-    color: black;
-    border-bottom-left-radius: 0;
+    background: white;
+    border-left: 3px solid #0052cc;
 }
 
+/* =========================================================
+   INPUT FORM (BOTTOM)
+========================================================= */
 .chat-form {
     display: flex;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    background-color: #fff;
+    margin-top: 5px;
 }
 
-.chat-form input[type="text"] {
+.chat-form input {
     flex: 1;
-    padding: 10px;
-    border-radius: 20px;
+    padding: 12px;
     border: 1px solid #ccc;
-    margin-right: 10px;
+    border-left: none; /* new: attaches to upload button */
+    border-radius: 0;  /* clean joint edges */
     outline: none;
 }
 
+
 .chat-form button {
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 12px 18px;
+    background: #0052cc;
     border: none;
-    background-color: #007bff;
     color: white;
+    border-radius: 0 6px 6px 0;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .chat-form button:hover {
-    background-color: #0056b3;
+    background: #003f9e;
 }
+
+/* Upload file button */
+.upload-btn {
+    background: #f0f4ff;
+    border: 1px solid #ccc;
+    border-right: none;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-radius: 6px 0 0 6px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.upload-btn:hover {
+    background: #e0e8ff;
+}
+

@@ -1,17 +1,140 @@
-{% extends 'chat/index.html' %}
-{% load static %}  <!-- Add this line -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🏥 Medical AI Assistant - Login</title>
+    <style>
+        /* Reset some default browser styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block title %}Login{% endblock %}
+        /* Full height for body and html */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
 
-{% block content %}
-<div class="auth-form">
-    <h2>Login</h2>
-    <form method="post" novalidate>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn">Login</button>
-    </form>
-    <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
-    <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
-</div>
-{% endblock %}
+        /* Main container to center everything */
+        .container {
+            flex-grow: 1; /* Ensures the content grows to fill the available space */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Header styling */
+        .container h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        /* Auth form styling */
+        .auth-form {
+            width: 100%;
+            max-width: 600px;
+            max-height: 400px
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-form h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .auth-form form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .auth-form form input {
+            margin-bottom: 15px;
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        /* Smaller Login Button styling */
+        .auth-form form button {
+            padding: 8px 18px;  /* Reduced padding for smaller button */
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;  /* Smaller font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 30%;  /* Set width to 30% */
+    margin: 0 auto;  /* This centers the button */
+    display: block;  /* Ensures the button is a block-level element */
+}
+
+
+        .auth-form form button:hover {
+            background-color: #2980b9;
+        }
+
+        .auth-form p {
+            font-size: 1rem;
+            margin-top: 15px;
+            color: #7f8c8d;
+        }
+
+        .auth-form a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .auth-form a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer styling */
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            background-color: #ecf0f1;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🏥 Medical AI Assistant</h1>
+
+        <div class="auth-form">
+            <h2>Login</h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}  <!-- Django form rendered here -->
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+            <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
+        </div>
+
+    </div>
+
+    <footer>
+        © Medical AI Assistant. All rights reserved.
+    </footer>
+</body>
+</html>
